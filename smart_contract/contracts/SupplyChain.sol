@@ -9,7 +9,6 @@ contract SupplyChain {
     struct Product {
         address creator;
         address[] entities;
-        mapping(address => uint) entityIndex;
         uint status;
         string[] productData;
     }
@@ -39,7 +38,6 @@ contract SupplyChain {
         _products[_productHash] = Product(msg.sender, _entities, 0, temp);
         for (uint i=0; i< _entities.length;i++) {
             require(!_blacklist[_entities[i]], 'the chosen provider is in the blacklist');
-            _products[_productHash].entityIndex[_entities[i]] = i+1;
         }
     }
 
@@ -50,12 +48,17 @@ contract SupplyChain {
 
     function changeProvider(uint _productHash, address _previousProvider, address _newProvider) public productExists(_productHash) {
         require(msg.sender == _products[_productHash].creator, 'only the creator can change the provider');
-        uint index = _products[_productHash].entityIndex[_previousProvider];
-        require(index != 0, 'unknown previous provider');
-        require(index > _products[_productHash].status, 'already passed that state');
-        _products[_productHash].entityIndex[_previousProvider] = 0;
-        _products[_productHash].entityIndex[_newProvider] = index;
-        _products[_productHash].entities[index - 1] = _newProvider;
+        bool changed = false;
+        for (uint i=0; i< _products[_productHash].entities.length; i++) {
+            address entity =  _products[_productHash].entities[i];
+            if (entity == _previousProvider) {
+                require(i > _products[_productHash].status, 'already passed that state');
+                _products[_productHash].entities[i] = _newProvider;
+                changed = true;
+                break;
+            }
+            require(changed, 'unknown previous provider');
+        }
     }
 
     function blacklistProvider(address _badProvider) public {
