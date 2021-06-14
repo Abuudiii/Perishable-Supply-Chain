@@ -7,4 +7,4 @@ A concept exploring the vast opportunities of using DLT (Distributed Ledger Tech
 <em>Rushang Shah</em> <br> 
 
 <br>
-<p>Feel free to leave feedback on how to improve on this project further. Thanks! :)</p>
+<p>Feel free to leave feedback and advice on how to improve on this project further. Thanks! :)</p>
